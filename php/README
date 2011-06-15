@@ -1,0 +1,5 @@
+- php-fpm enabled
+- /etc/rc.d/rc.php-fpm
+- must be installed under Slackware 13.1
+- original build: http://slackware.osuosl.org/slackware-13.37/source/n/php/
+- disabled xpm, imap support(for the sake of compiling smoothly)
