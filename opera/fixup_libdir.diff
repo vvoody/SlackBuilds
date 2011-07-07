@@ -1,0 +1,8 @@
+--- usr/bin/opera.orig	2011-07-07 22:02:56.000000000 +0800
++++ usr/bin/opera	2011-07-07 22:03:04.000000000 +0800
+@@ -1,4 +1,4 @@
+ #!/bin/sh
+ export OPERA_DIR=${OPERA_DIR:-/usr/share/opera}
+ export OPERA_PERSONALDIR=${OPERA_PERSONALDIR:-$HOME/.opera}
+-exec /usr/lib/opera/opera "$@"
++exec /usr/lib64/opera/opera "$@"
