@@ -2,11 +2,31 @@
 
 # Slackware build script for opera
 
-# Maintained by vvoody <vvoodywang@gmail.com>
+# Copyright 2011  Robby Workman, Northport, Alabama, USA
+# All rights reserved.
+#
+# Now maintained by vvoody <vvoodywang@gmail.com>
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 PRGNAM=opera
 VERSION=11.50
-BUILDNO=1074
+REVNO=1074
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
@@ -37,26 +57,27 @@ fi
 rm -rf $PKG
 mkdir -p $TMP $PKG $OUTPUT
 cd $TMP
-rm -rf $PRGNAM-${VERSION}-${BUILDNO}.${ARCH}.linux
-tar xvf $CWD/$PRGNAM-${VERSION}-${BUILDNO}.${ARCH}.linux.tar.xz
-cd $PRGNAM-${VERSION}-${BUILDNO}.${ARCH}.linux
+rm -rf $PRGNAM-${VERSION}-${REVNO}.${ARCH}.linux
+tar xf $CWD/$PRGNAM-${VERSION}-${REVNO}.${ARCH}.linux.tar.xz
+cd $PRGNAM-${VERSION}-${REVNO}.${ARCH}.linux
 chown -R root:root .
 chmod -R u+w,go+r-w,a-s .
 
-./install --prefix /usr --repackage $PKG/usr
+[ "$LIBDIRSUFFIX" = "64" ] && patch -p1 < $CWD/fixup_libdir.diff
+[ "$LIBDIRSUFFIX" = "64" ] && mv lib lib64
 
-cd $PKG
-if [ "$LIBDIRSUFFIX" = "64" ]; then
-    patch -p0 < $CWD/fixup_libdir.diff
-    mv usr/lib usr/lib${LIBDIRSUFFIX}
-fi
+#sh install \
+./install \
+  --prefix /usr \
+  --repackage $PKG/usr
+  
+mv $PKG/usr/share/man $PKG/usr
 
-mv usr/share/man usr
-mv usr/share/doc usr
-mv usr/doc/opera usr/doc/opera-$VERSION
-( cd usr/doc ; ln -s opera-$VERSION opera )
-
-cat $CWD/$PRGNAM.SlackBuild > usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+mv $PKG/usr/share/doc $PKG/usr
+mv $PKG/usr/doc/opera $PKG/usr/doc/opera-$VERSION
+( cd $PKG/usr/doc ; ln -s opera-$VERSION opera )
+# Add a copy of the build script to the docs
+cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
 mkdir -p $PKG/install
 cat $CWD/slack-desc > $PKG/install/slack-desc
