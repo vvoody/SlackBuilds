@@ -2,10 +2,9 @@
 
 # Slackware build script for opera
 
-# Copyright 2011  Robby Workman, Northport, Alabama, USA
+# Copyright 2006  Martin Lefebvre <dadexter@gmail.com>
+# Copyright 2008-2011  Robby Workman, Northport, Alabama, USA
 # All rights reserved.
-#
-# Now maintained by vvoody <vvoodywang@gmail.com>
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -23,6 +22,8 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# Now maintained by vvoody <vvoodywang@gmail.com>
 
 PRGNAM=opera
 VERSION=11.50
@@ -63,10 +64,11 @@ cd $PRGNAM-${VERSION}-${REVNO}.${ARCH}.linux
 chown -R root:root .
 chmod -R u+w,go+r-w,a-s .
 
-[ "$LIBDIRSUFFIX" = "64" ] && patch -p1 < $CWD/fixup_libdir.diff
-[ "$LIBDIRSUFFIX" = "64" ] && mv lib lib64
+if [ "$LIBDIRSUFFIX" = "64" ]; then
+  patch -p1 < $CWD/fixup_libdir.diff
+  mv lib lib64
+fi
 
-#sh install \
 ./install \
   --prefix /usr \
   --repackage $PKG/usr
