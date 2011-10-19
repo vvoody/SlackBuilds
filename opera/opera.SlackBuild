@@ -26,8 +26,8 @@
 # Now maintained by vvoody <vvoodywang@gmail.com>
 
 PRGNAM=opera
-VERSION=11.51
-REVNO=1087
+VERSION=11.52
+REVNO=1100
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
 
@@ -69,8 +69,8 @@ chmod -R u+w,go+r-w,a-s .
   --repackage $PKG/usr
 
 if [ "$LIBDIRSUFFIX" = "64" ]; then
-	mv $PKG/usr/lib $PKG/usr/lib64
-	sed -i "s,/lib/,/lib64/," $PKG/usr/bin/opera
+  mv $PKG/usr/lib $PKG/usr/lib64
+  sed -i "s,/lib/,/lib64/," $PKG/usr/bin/opera
 fi
   
 mv $PKG/usr/share/man $PKG/usr
