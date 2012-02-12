@@ -7,4 +7,4 @@ DOWNLOAD_x86_64="http://ftp.opera.com/pub/opera/linux/1161/opera-11.61-1250.x86_
 MD5SUM_x86_64="424bff342dc5e9225cd573e50d49552a"
 MAINTAINER="vvoody"
 EMAIL="vvoodywang@gmail.com"
-APPROVED="rworkman,Niels Horn"
+APPROVED="rworkman"
