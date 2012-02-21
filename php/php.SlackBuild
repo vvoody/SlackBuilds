@@ -24,9 +24,9 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-VERSION=5.3.6
+VERSION=5.3.10
 ALPINE=2.00
-BUILD=${BUILD:-1_slk131fpm}
+BUILD=${BUILD:-1_slack13.1_fpm}
 
 # Automatically determine the architecture we're building on:
 if [ -z "$ARCH" ]; then
@@ -84,11 +84,11 @@ mkdir -p $PKG/etc/httpd
 mkdir -p $PKG/etc/php
 # A trick from DaMouse to enable building php into $PKG.
 # We'll remove this later on.
-#cat /etc/httpd/original/httpd.conf > $PKG/etc/httpd/httpd.conf
-#if [ ! -e /etc/httpd/original/httpd.conf ]; then
-#  echo "FATAL:  no /etc/httpd/original/httpd.conf found."
-#  exit 1
-#fi
+cat /etc/httpd/original/httpd.conf > $PKG/etc/httpd/httpd.conf
+if [ ! -e /etc/httpd/original/httpd.conf ]; then
+  echo "FATAL:  no /etc/httpd/original/httpd.conf found."
+  exit 1
+fi
 
 cd $TMP
 rm -rf php-$VERSION
@@ -139,7 +139,6 @@ CFLAGS="$SLKCFLAGS" \
   --libdir=/usr/lib${LIBDIRSUFFIX} \
   --with-libdir=lib${LIBDIRSUFFIX} \
   --sysconfdir=/etc \
-  --enable-fpm \
   --disable-safe-mode \
   --disable-magic-quotes \
   --enable-zend-multibyte \
@@ -215,7 +214,6 @@ CFLAGS="$SLKCFLAGS" \
   --enable-static=no \
   --with-gnu-ld \
   --with-pic \
-  --enable-pcntl \
   --build=$ARCH-slackware-linux
 }
 
@@ -226,16 +224,23 @@ CFLAGS="$SLKCFLAGS" \
 # "safe" mode.
 
 # Make the Apache2 module version of PHP:
-php_configure
+php_configure \
+   --enable-fpm
 #  --with-apxs2=/usr/sbin/apxs
 make $NUMJOBS || make || exit 1
 make install INSTALL_ROOT=$PKG || exit 1
 
 # Make the CLI/CGI version of PHP:
-#cat ./sapi/cli/php > $PKG/usr/bin/php
-#cat ./sapi/cgi/php-cgi > $PKG/usr/bin/php-cgi
-#chmod 755 $PKG/usr/bin/php
-#chmod 755 $PKG/usr/bin/php-cgi
+make distclean
+php_configure \
+  --enable-pcntl \
+  --enable-sigchild
+make $NUMJOBS || make || exit 1
+mkdir -p $PKG/usr/bin
+cat ./sapi/cli/php > $PKG/usr/bin/php
+cat ./sapi/cgi/php-cgi > $PKG/usr/bin/php-cgi
+chmod 755 $PKG/usr/bin/php
+chmod 755 $PKG/usr/bin/php-cgi
 
 # PHP (used to) install Pear with some strange permissions.
 chmod 755 $PKG/usr/bin/pear
@@ -243,7 +248,6 @@ chmod 755 $PKG/usr/bin/pear
 # PHP sometimes puts junk in the root directory:
 ( cd $PKG
   rm -rf .channels .depdb .depdblock .filemap .lock .registry
-  rm -rf usr/lib/php/{.lock,.depdblock,.filemap,.depdb}
 )
 
 # Fix $PKG/usr/lib/php perms:
@@ -276,7 +280,7 @@ mkdir -p $PKG/etc/rc.d
 cat sapi/fpm/init.d.php-fpm > $PKG/etc/rc.d/rc.php-fpm.new
 chmod 755 $PKG/etc/rc.d/rc.php-fpm.new
 
-cp -a $PKG/etc/php-fpm.conf{.default,.new}
+mv $PKG/etc/php-fpm.conf{.default,.new}
 
 # This can go now.
 rm -f $PKG/etc/httpd/httpd*
